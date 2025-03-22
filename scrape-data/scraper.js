@@ -20,7 +20,7 @@ const scrapeCategory = (Browser, url) =>
       console.log(dataCategory);
 
       await page.close();
-      console.log(">> Tab đã đóng");
+      console.log(">> Tab đã đóng...");
       resolve();
     } catch (error) {
       console.log("Lỗi ở scrapeCategory" + error);
