@@ -107,7 +107,7 @@ const scrape = (browser, url) =>
                     .querySelector(
                       "div.badge.d-inline-flex.align-items-center.fs-11.fw-normal.text-uppercase.mb-1 > div"
                     )
-                    .className.replace(/^\D+/g, ""),
+                    ?.className?.replace(/^\D+/g, ""),
                   address: el.querySelector("address")?.innerText,
                   attribute: {
                     price: el.querySelector(
@@ -126,24 +126,80 @@ const scrape = (browser, url) =>
                 };
               }
             );
-            console.log(header);
+            // console.log(header);
+
+            detailData.header = header;
+            // Thông tin mô tả
+            const mainContentHeader = await pageDetail.$eval(
+              "div.border-bottom.pb-3.mb-4",
+              (el) =>
+                el.querySelector("div.border-bottom.pb-3.mb-4 > h2.fs-5.mb-3")
+                  .innerText
+            );
+            const mainConTentContent = await pageDetail.$$eval(
+              "div.border-bottom.pb-3.mb-4 > p",
+              (els) => els.map((el) => el.innerText)
+            );
+            detailData.mainContent = {
+              header: mainContentHeader,
+              content: mainConTentContent,
+            };
+            // console.log(mainContentHeader);
+            // console.log(mainConTentContent);
+
+            // Thông tin nổi bật
+            let overviewHeader = null;
+
+            try {
+              overviewHeader = await pageDetail.$eval(
+                "#webpage > main > div:nth-child(2) > div > div.col-md-9.col-lg-8 > div.bg-white.shadow-sm.rounded.p-4.mb-3 > div:nth-child(3)",
+                (el) => {
+                  const header = el.querySelector("h2.fs-5.mb-3");
+                  return header ? header.innerText.trim() : null;
+                }
+              );
+            } catch (error) {
+              overviewHeader = null;
+            }
+            const overviewContent = await pageDetail.$$eval(
+              "#webpage > main > div:nth-child(2) > div > div.col-md-9.col-lg-8 > div.bg-white.shadow-sm.rounded.p-4.mb-3 > div:nth-child(3) > div > div",
+              (divs) =>
+                divs
+                  .filter((div) => div.tagName.toLowerCase() !== "h2")
+                  .map((div, index, arr) => {
+                    if (index % 2 === 0 && arr[index + 1]) {
+                      return {
+                        name: div.innerText.trim(),
+                        content: arr[index + 1].innerText.trim(),
+                      };
+                    }
+                  })
+                  .filter(Boolean)
+            );
+
+            detailData.overview = {
+              header: overviewHeader,
+              content: overviewContent,
+            };
+            // console.log(overviewHeader);
+            // console.log(overviewContent);
 
             await pageDetail.close();
             console.log(">> Đã đóng tab " + link);
-            resolve();
+            resolve(detailData);
           } catch (error) {
             console.log("Lấy data detail lỗi: " + error);
             reject(error);
           }
         });
-
+      const details = [];
       for (let link of detailLinks) {
-        await scraperDetail(link);
+        const detail = await scraperDetail(link);
+        details.push(detail);
       }
-
-      await browser.close();
+      scrapeData.body = details;
       console.log(">> Trình duyệt đã đóng.");
-      resolve();
+      resolve(scrapeData);
     } catch (error) {
       reject(error);
     }
