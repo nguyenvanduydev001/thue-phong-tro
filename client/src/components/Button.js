@@ -6,7 +6,7 @@ const Button = ({ text, textColor, bgColor, IcAfter, onClick, fullWidth }) => {
       type="button"
       className={`px-3 py-1 ${textColor} ${bgColor} ${
         fullWidth && "w-full h-[40px]"
-      } outline-none rounded-lg hover:bg-[#1366de] hover:text-white p-1 flex items-center justify-center gap-1`}
+      } outline-none rounded-xl hover:bg-[#1366de] hover:text-white p-1 flex items-center justify-center gap-1`}
       onClick={onClick}
     >
       <span>{IcAfter && <IcAfter />}</span>

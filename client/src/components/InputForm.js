@@ -9,7 +9,7 @@ const InputForm = ({ label }) => {
       <input
         type="text"
         id="phone"
-        className="outline-none p2 border border-black rounded-md w-full h-[40px] "
+        className="outline-none p-3 border rounded-md w-full h-[40px] focus:outline-none focus:ring-1 focus:ring-blue-500"
       />
     </div>
   );
