@@ -15,7 +15,10 @@ module.exports = {
       value: {
         type: Sequelize.STRING,
       },
-      subtile: {
+      header: {
+        type: Sequelize.STRING,
+      },
+      subheader: {
         type: Sequelize.STRING,
       },
       createdAt: {
