@@ -6,12 +6,20 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   function (config) {
-    const token = localStorage.getItem("persist:auth");
-    console.log(token);
+    // gắn token vào header
     return config;
   },
   function (error) {
-    console.log(error);
+    return Promise.reject(error);
+  }
+);
+
+instance.interceptors.response.use(
+  function (response) {
+    // refresh token
+    return response;
+  },
+  function (error) {
     return Promise.reject(error);
   }
 );
